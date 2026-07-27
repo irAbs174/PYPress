@@ -1,0 +1,1 @@
+"""Future plugin package."""
