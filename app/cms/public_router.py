@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import Response
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.cms.models import Category, ContentItem, ContentStatus, ContentType, Tag
@@ -43,10 +43,29 @@ def site_context(request: Request, session: Session, **extra):
 @router.get("/")
 def home(request: Request, session: Session = Depends(get_db_session)):
     posts = session.scalars(published_posts_query()).all()
+    preview_posts = posts[:3]
+    total_posts = session.scalar(
+        select(func.count()).select_from(ContentItem).where(ContentItem.content_type == ContentType.POST.value)
+    ) or 0
+    total_pages = session.scalar(
+        select(func.count()).select_from(ContentItem).where(ContentItem.content_type == ContentType.PAGE.value)
+    ) or 0
+    total_categories = session.scalar(select(func.count()).select_from(Category)) or 0
+    total_tags = session.scalar(select(func.count()).select_from(Tag)) or 0
     return request.app.state.templates.TemplateResponse(
         request,
         "home.html",
-        site_context(request, session, posts=posts, page_title=None),
+        site_context(
+            request,
+            session,
+            posts=posts,
+            preview_posts=preview_posts,
+            total_posts=total_posts,
+            total_pages=total_pages,
+            total_categories=total_categories,
+            total_tags=total_tags,
+            page_title=None,
+        ),
     )
 
 
