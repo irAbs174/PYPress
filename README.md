@@ -37,6 +37,27 @@ Change them in `.env` before running outside local development.
 
 Create a `.env` file from `.env.example` and update any values as needed.
 
+## Docker
+
+Run PYpress with Docker Compose (app + PostgreSQL):
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+The application starts on `http://127.0.0.1:8000`.
+
+Useful commands:
+
+```bash
+docker compose up --build -d
+docker compose logs -f web
+docker compose down
+```
+
+Docker Compose overrides `DATABASE_URL` to use PostgreSQL. Change `SECRET_KEY` and `ADMIN_PASSWORD` in `.env` before deploying.
+
 ## Tests
 
 ```bash
