@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+{% block title %}{% if is_new %}New{% else %}Edit{% endif %} Plugin | PYpress{% endblock %}
+{% block page_heading %}{% if is_new %}New plugin{% else %}Edit {{ name }}{% endif %}{% endblock %}
+{% block content %}
+<section class="section-header mb-6">
+  <div>
+    <p class="text-textmuted">
+      {% if is_new %}
+      Create a plugin with <code>plugin.json</code> and a <code>register(app, hooks)</code> entrypoint.
+      {% else %}
+      Edit plugin source. Changes reload hooks immediately after save.
+      {% endif %}
+    </p>
+  </div>
+  <a href="/admin/plugins" class="secondary-btn button-link">Back</a>
+</section>
+
+{% if error %}
+<div class="alert mb-4">{{ error }}</div>
+{% endif %}
+{% if message %}
+<div class="mb-4 px-3 py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 text-sm">
+  {% if message == 'saved' %}Plugin saved and reloaded.{% elif message == 'created' %}Plugin created and enabled.{% elif message == 'uploaded' %}Plugin uploaded and reloaded.{% else %}{{ message }}{% endif %}
+</div>
+{% endif %}
+
+<section class="bg-cardbg border border-cardborder rounded-xl p-6">
+  <form
+    method="post"
+    action="{% if is_new %}/admin/plugins/new{% else %}/admin/plugins/{{ name }}/edit{% endif %}"
+    class="stack"
+  >
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+    <label>
+      <span>Name</span>
+      <input
+        type="text"
+        name="name"
+        value="{{ name }}"
+        {% if not is_new %}readonly{% endif %}
+        required
+        pattern="[a-z][a-z0-9_]{1,62}"
+        placeholder="my_plugin"
+      />
+    </label>
+
+    <label>
+      <span>Version</span>
+      <input type="text" name="version" value="{{ version }}" required />
+    </label>
+
+    <label>
+      <span>Description</span>
+      <input type="text" name="description" value="{{ description }}" />
+    </label>
+
+    <label class="checkbox-row">
+      <input type="checkbox" name="enabled_by_default" {% if enabled_by_default %}checked{% endif %} />
+      <span>Enabled by default on fresh installs</span>
+    </label>
+
+    <label>
+      <span>plugin.py</span>
+      <textarea name="source" rows="18" class="font-mono text-sm" required>{{ source }}</textarea>
+    </label>
+
+    <div class="actions">
+      <button type="submit">{% if is_new %}Create plugin{% else %}Save changes{% endif %}</button>
+    </div>
+  </form>
+</section>
+
+<section class="bg-cardbg border border-cardborder rounded-xl p-6 mt-6 text-sm text-textmuted">
+  <h3 class="text-textmain font-semibold mb-2">Hook API</h3>
+  <ul class="list-disc pl-5 space-y-1">
+    <li><code>hooks.add_action(name, callback)</code> / <code>hooks.do_action(name, ...)</code></li>
+    <li><code>hooks.add_filter(name, callback)</code> / <code>hooks.apply_filters(name, value, ...)</code></li>
+    <li>Core hooks: <code>app.startup</code>, <code>content.before_save</code>, <code>content.after_save</code>, <code>public.before_render</code></li>
+  </ul>
+</section>
+{% endblock %}

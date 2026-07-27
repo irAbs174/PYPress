@@ -48,8 +48,13 @@ Create a `.env` file from `.env.example` and update any values as needed.
 
 - Themes live in `themes/<name>/` with `theme.json` and `templates/`
 - Plugins live in `plugins/<name>/` with `plugin.json` and `plugin.py` exposing `register(app, hooks)`
+- From **Admin → Plugins** you can:
+  - Create a new plugin (editor for `plugin.py`)
+  - Edit existing plugin source and metadata
+  - Upload a `.zip` containing `plugin.json` + `plugin.py`
+  - Enable, disable, or delete plugins (hooks reload immediately)
 - Uploads are stored in `uploads/` and served at `/uploads/...`
-- Manage themes/plugins from the admin UI
+- Manage themes from the admin UI
 
 Core hooks:
 

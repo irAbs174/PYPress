@@ -25,7 +25,7 @@ def login(client):
 def test_root_serves_public_home(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert "FastAPI Powered CMS" in response.text
+    assert "Core Features" in response.text
     assert "Latest posts" in response.text
     assert "Powered by the hello_world plugin" in response.text
 
@@ -248,6 +248,132 @@ def test_plugins_toggle(client):
     assert toggled.status_code == 303
     home = client.get("/")
     assert "Powered by the hello_world plugin" not in home.text
+
+
+def test_plugin_create_edit_delete(client):
+    login(client)
+    new_page = client.get("/admin/plugins/new")
+    assert new_page.status_code == 200
+    csrf = extract_csrf_token(new_page.text)
+    source = (
+        "def register(app, hooks):\n"
+        "    def note(context, request):\n"
+        "        context = dict(context)\n"
+        "        context['plugin_footer_note'] = 'From demo_writer.'\n"
+        "        return context\n"
+        "    hooks.add_filter('public.before_render', note)\n"
+    )
+    created = client.post(
+        "/admin/plugins/new",
+        data={
+            "name": "demo_writer",
+            "version": "1.0.0",
+            "description": "Created in test",
+            "source": source,
+            "csrf_token": csrf,
+        },
+        follow_redirects=False,
+    )
+    assert created.status_code == 303
+
+    edit_page = client.get("/admin/plugins/demo_writer/edit")
+    assert edit_page.status_code == 200
+    assert "Created in test" in edit_page.text
+    edit_csrf = extract_csrf_token(edit_page.text)
+    updated_source = source.replace("From demo_writer.", "From demo_writer v2.")
+    updated = client.post(
+        "/admin/plugins/demo_writer/edit",
+        data={
+            "version": "1.1.0",
+            "description": "Updated in test",
+            "source": updated_source,
+            "csrf_token": edit_csrf,
+        },
+        follow_redirects=False,
+    )
+    assert updated.status_code == 303
+
+    saved = client.get("/admin/plugins/demo_writer/edit")
+    assert saved.status_code == 200
+    assert "Updated in test" in saved.text
+    assert "1.1.0" in saved.text
+    assert "From demo_writer v2." in saved.text
+
+    # Disable hello_world so this plugin's footer filter is visible
+    listed = client.get("/admin/plugins")
+    toggle_csrf = extract_csrf_token(listed.text)
+    client.post(
+        "/admin/plugins/toggle",
+        data={"plugin_name": "hello_world", "csrf_token": toggle_csrf},
+        follow_redirects=False,
+    )
+    home = client.get("/")
+    assert "From demo_writer v2." in home.text
+
+    listed = client.get("/admin/plugins")
+    delete_csrf = extract_csrf_token(listed.text)
+    deleted = client.post(
+        "/admin/plugins/demo_writer/delete",
+        data={"csrf_token": delete_csrf},
+        follow_redirects=False,
+    )
+    assert deleted.status_code == 303
+    missing = client.get("/admin/plugins/demo_writer/edit", follow_redirects=False)
+    assert missing.status_code == 303
+    assert "/admin/plugins" in missing.headers["location"]
+
+
+def test_plugin_upload_zip(client):
+    import io
+    import json
+    import zipfile
+
+    login(client)
+    page = client.get("/admin/plugins")
+    csrf = extract_csrf_token(page.text)
+
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr(
+            "zipped_demo/plugin.json",
+            json.dumps(
+                {
+                    "name": "zipped_demo",
+                    "version": "0.2.0",
+                    "description": "Uploaded via ZIP",
+                    "enabled_by_default": False,
+                }
+            ),
+        )
+        zf.writestr(
+            "zipped_demo/plugin.py",
+            "def register(app, hooks):\n"
+            "    def note(context, request):\n"
+            "        context = dict(context)\n"
+            "        context['plugin_footer_note'] = 'From zipped_demo.'\n"
+            "        return context\n"
+            "    hooks.add_filter('public.before_render', note)\n",
+        )
+    buf.seek(0)
+
+    uploaded = client.post(
+        "/admin/plugins/upload",
+        data={"csrf_token": csrf, "enable": "on"},
+        files={"file": ("zipped_demo.zip", buf.getvalue(), "application/zip")},
+        follow_redirects=False,
+    )
+    assert uploaded.status_code == 303
+    assert "/admin/plugins/zipped_demo/edit" in uploaded.headers["location"]
+    home = client.get("/")
+    assert "From zipped_demo." in home.text
+
+    listed = client.get("/admin/plugins")
+    delete_csrf = extract_csrf_token(listed.text)
+    client.post(
+        "/admin/plugins/zipped_demo/delete",
+        data={"csrf_token": delete_csrf},
+        follow_redirects=False,
+    )
 
 
 def test_sitemap_and_robots(client):

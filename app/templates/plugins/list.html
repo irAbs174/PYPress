@@ -4,8 +4,41 @@
 {% block content %}
 <section class="section-header mb-6">
   <div>
-    <p class="text-textmuted">Enable or disable filesystem plugins.</p>
+    <p class="text-textmuted">Create, edit, upload, and enable filesystem plugins.</p>
   </div>
+  <a href="/admin/plugins/new" class="button-link">New plugin</a>
+</section>
+
+{% if error %}
+<div class="alert mb-4">{{ error }}</div>
+{% endif %}
+{% if message %}
+<div class="mb-4 px-3 py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 text-sm">
+  {{ message }}
+</div>
+{% endif %}
+
+<section class="bg-cardbg border border-cardborder rounded-xl p-6 mb-6">
+  <h2 class="text-lg font-semibold mb-4">Upload plugin ZIP</h2>
+  <p class="text-textmuted text-sm mb-4">
+    ZIP must include <code>plugin.json</code> and <code>plugin.py</code> at the root or inside one folder.
+  </p>
+  <form method="post" action="/admin/plugins/upload" enctype="multipart/form-data" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <label>
+      <span>ZIP file</span>
+      <input type="file" name="file" accept=".zip,application/zip" required />
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" name="enable" checked />
+      <span>Enable after upload</span>
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" name="overwrite" />
+      <span>Overwrite if plugin already exists</span>
+    </label>
+    <button type="submit">Upload plugin</button>
+  </form>
 </section>
 
 <section class="bg-cardbg border border-cardborder rounded-xl p-6">
@@ -27,7 +60,8 @@
         <td>{{ plugin.version }}</td>
         <td>{{ plugin.description }}</td>
         <td>{% if plugin.name in enabled_plugins %}Enabled{% else %}Disabled{% endif %}</td>
-        <td>
+        <td class="actions">
+          <a href="/admin/plugins/{{ plugin.name }}/edit">Edit</a>
           <form method="post" action="/admin/plugins/toggle">
             <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
             <input type="hidden" name="plugin_name" value="{{ plugin.name }}" />
@@ -35,13 +69,17 @@
               {% if plugin.name in enabled_plugins %}Disable{% else %}Enable{% endif %}
             </button>
           </form>
+          <form method="post" action="/admin/plugins/{{ plugin.name }}/delete" onsubmit="return confirm('Delete plugin {{ plugin.name }}? This cannot be undone.');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <button type="submit" class="secondary-btn">Delete</button>
+          </form>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   {% else %}
-  <p>No plugins found in <code>plugins/</code>.</p>
+  <p class="text-textmuted">No plugins found in <code>plugins/</code>.</p>
   {% endif %}
 </section>
 {% endblock %}
