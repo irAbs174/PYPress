@@ -6,3 +6,5 @@ __pycache__/
 *.db
 .env
 .DS_Store
+uploads/*
+!uploads/.gitkeep

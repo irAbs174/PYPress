@@ -1,13 +1,17 @@
 # PYpress
 
-PYpress is a Python-based CMS MVP inspired by WordPress and built on FastAPI.
+PYpress is a Python-based CMS inspired by WordPress and built on FastAPI.
 
 ## Features
 
 - Session-based admin authentication with role checks
 - Protected admin dashboard
-- Post and page management with draft/published states
-- SQLAlchemy models and Alembic migration scaffold
+- Posts and pages with draft/published states, excerpts, and SEO fields
+- Categories and tags
+- Media library (local uploads)
+- Public site rendering via filesystem themes
+- Plugin system with action/filter hooks
+- SQLAlchemy models and Alembic migrations
 - Server-rendered UI using Jinja2 templates
 
 ## Requirements
@@ -24,7 +28,8 @@ cp .env.example .env
 uvicorn app.main:app --reload
 ```
 
-The application starts on `http://127.0.0.1:8000`.
+The public site starts on `http://127.0.0.1:8000`.
+Admin is at `http://127.0.0.1:8000/admin`.
 
 Default bootstrap admin credentials:
 
@@ -33,9 +38,24 @@ Default bootstrap admin credentials:
 
 Change them in `.env` before running outside local development.
 
+If you already have an older local `pypress.db`, delete it (or run Alembic migrations) so the new schema is created.
+
 ## Environment
 
 Create a `.env` file from `.env.example` and update any values as needed.
+
+## Themes and plugins
+
+- Themes live in `themes/<name>/` with `theme.json` and `templates/`
+- Plugins live in `plugins/<name>/` with `plugin.json` and `plugin.py` exposing `register(app, hooks)`
+- Uploads are stored in `uploads/` and served at `/uploads/...`
+- Manage themes/plugins from the admin UI
+
+Core hooks:
+
+- `app.startup`
+- `content.before_save` / `content.after_save`
+- `public.before_render` (filter)
 
 ## Docker
 
@@ -73,8 +93,14 @@ app/
   cms/
   core/
   database/
+  media/
+  plugins/
+  themes/
   static/
   templates/
+themes/
+plugins/
+uploads/
 migrations/
 scripts/
 tests/

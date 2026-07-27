@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Media | PYpress{% endblock %}
+{% block content %}
+<section class="section-header">
+  <div>
+    <h1>Media library</h1>
+    <p>Upload images and documents for your content.</p>
+  </div>
+</section>
+
+{% if error %}
+<div class="alert">{{ error }}</div>
+{% endif %}
+
+<section class="panel stack">
+  <form method="post" action="/admin/media/upload" enctype="multipart/form-data" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <label>
+      <span>File</span>
+      <input type="file" name="file" required />
+    </label>
+    <button type="submit">Upload</button>
+  </form>
+</section>
+
+<section class="panel" style="margin-top: 1rem;">
+  {% if assets %}
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Size</th>
+        <th>URL</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in assets %}
+      <tr>
+        <td>{{ asset.original_name }}</td>
+        <td>{{ asset.mime_type }}</td>
+        <td>{{ asset.size }} bytes</td>
+        <td><code>/uploads/{{ asset.filename }}</code></td>
+        <td>
+          <form method="post" action="/admin/media/{{ asset.id }}/delete" onsubmit="return confirm('Delete this file?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <button type="submit" class="secondary-btn">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No media uploaded yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

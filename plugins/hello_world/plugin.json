@@ -1,0 +1,6 @@
+{
+  "name": "hello_world",
+  "version": "1.0.0",
+  "description": "Sample plugin that adds a footer note on the public site",
+  "enabled_by_default": true
+}

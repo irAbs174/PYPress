@@ -10,3 +10,5 @@ goal
 .cursor
 *.md
 !README.md
+uploads/*
+!uploads/.gitkeep

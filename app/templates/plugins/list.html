@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Plugins | PYpress{% endblock %}
+{% block content %}
+<section class="section-header">
+  <div>
+    <h1>Plugins</h1>
+    <p>Enable or disable filesystem plugins.</p>
+  </div>
+</section>
+
+<section class="panel">
+  {% if plugins %}
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Version</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for plugin in plugins %}
+      <tr>
+        <td>{{ plugin.name }}</td>
+        <td>{{ plugin.version }}</td>
+        <td>{{ plugin.description }}</td>
+        <td>{% if plugin.name in enabled_plugins %}Enabled{% else %}Disabled{% endif %}</td>
+        <td>
+          <form method="post" action="/admin/plugins/toggle">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <input type="hidden" name="plugin_name" value="{{ plugin.name }}" />
+            <button type="submit" class="secondary-btn">
+              {% if plugin.name in enabled_plugins %}Disable{% else %}Enable{% endif %}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No plugins found in <code>plugins/</code>.</p>
+  {% endif %}
+</section>
+{% endblock %}

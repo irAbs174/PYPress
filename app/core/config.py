@@ -16,6 +16,11 @@ class Settings(BaseSettings):
     session_cookie_name: str = "pypress_session"
     admin_email: str = "admin@example.com"
     admin_password: str = "admin12345"
+    upload_dir: str = str(BASE_DIR / "uploads")
+    max_upload_bytes: int = 10 * 1024 * 1024
+    themes_dir: str = str(BASE_DIR / "themes")
+    plugins_dir: str = str(BASE_DIR / "plugins")
+    default_theme: str = "default"
 
     model_config = SettingsConfigDict(
         env_file=BASE_DIR / ".env",

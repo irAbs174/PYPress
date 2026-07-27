@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}{{ page_title or site_title }}{% endblock %}</title>
+    {% if item %}
+    <meta name="description" content="{{ item.meta_description or item.excerpt or item.title }}" />
+    <meta property="og:title" content="{{ item.meta_title or item.title }}" />
+    <meta property="og:description" content="{{ item.meta_description or item.excerpt or item.title }}" />
+    <meta property="og:type" content="{% if item.content_type == 'post' %}article{% else %}website{% endif %}" />
+    {% else %}
+    <meta name="description" content="{{ site_tagline }}" />
+    {% endif %}
+    <link rel="stylesheet" href="/theme-static/theme.css" />
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="site-header">
+        <div>
+          <a class="brand" href="/">{{ site_title }}</a>
+          <p class="tagline">{{ site_tagline }}</p>
+        </div>
+        <nav class="nav">
+          <a href="/">Home</a>
+          <a href="/admin">Admin</a>
+        </nav>
+      </header>
+      <main>
+        {% block content %}{% endblock %}
+      </main>
+      <footer class="site-footer">
+        <p>&copy; {{ site_title }}</p>
+        {% if plugin_footer_note %}
+        <p class="plugin-note">{{ plugin_footer_note }}</p>
+        {% endif %}
+      </footer>
+    </div>
+  </body>
+</html>

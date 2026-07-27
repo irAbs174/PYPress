@@ -19,9 +19,43 @@
       <input type="text" name="title" value="{{ item.title if item else '' }}" required />
     </label>
     <label>
+      <span>Excerpt</span>
+      <textarea name="excerpt" rows="3">{{ item.excerpt if item and item.excerpt else '' }}</textarea>
+    </label>
+    <label>
       <span>Body</span>
       <textarea name="body" rows="12">{{ item.body if item else '' }}</textarea>
     </label>
+    <label>
+      <span>Meta title</span>
+      <input type="text" name="meta_title" value="{{ item.meta_title if item and item.meta_title else '' }}" />
+    </label>
+    <label>
+      <span>Meta description</span>
+      <textarea name="meta_description" rows="2">{{ item.meta_description if item and item.meta_description else '' }}</textarea>
+    </label>
+    {% if categories %}
+    <fieldset class="stack">
+      <legend>Categories</legend>
+      {% for category in categories %}
+      <label class="checkbox-row">
+        <input type="checkbox" name="category_ids" value="{{ category.id }}" {% if category.id in selected_category_ids %}checked{% endif %} />
+        <span>{{ category.name }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    {% endif %}
+    {% if tags %}
+    <fieldset class="stack">
+      <legend>Tags</legend>
+      {% for tag in tags %}
+      <label class="checkbox-row">
+        <input type="checkbox" name="tag_ids" value="{{ tag.id }}" {% if tag.id in selected_tag_ids %}checked{% endif %} />
+        <span>{{ tag.name }}</span>
+      </label>
+      {% endfor %}
+    </fieldset>
+    {% endif %}
     <label>
       <span>Status</span>
       <select name="status_value">
@@ -31,5 +65,11 @@
     </label>
     <button type="submit">{% if item %}Save changes{% else %}Create {{ title|lower }}{% endif %}</button>
   </form>
+  {% if item %}
+  <form method="post" action="/admin/content/{{ content_type }}/{{ item.id }}/delete" class="stack" style="margin-top: 1rem;" onsubmit="return confirm('Delete this item?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <button type="submit" class="secondary-btn">Delete</button>
+  </form>
+  {% endif %}
 </section>
 {% endblock %}

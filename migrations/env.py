@@ -5,8 +5,14 @@ from logging.config import fileConfig
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 
-from app.auth.models import User
-from app.cms.models import ContentItem
+from app.auth.models import User  # noqa: F401
+from app.cms.models import (  # noqa: F401
+    Category,
+    ContentItem,
+    MediaAsset,
+    SiteSetting,
+    Tag,
+)
 from app.core.config import get_settings
 from app.database.base import Base
 

@@ -13,9 +13,14 @@
         <a class="brand" href="/admin">PYpress</a>
         {% if current_user %}
         <nav class="nav-links">
+          <a href="/">View site</a>
           <a href="/admin">Dashboard</a>
           <a href="/admin/content/post">Posts</a>
           <a href="/admin/content/page">Pages</a>
+          <a href="/admin/taxonomies">Categories</a>
+          <a href="/admin/media">Media</a>
+          <a href="/admin/themes">Themes</a>
+          <a href="/admin/plugins">Plugins</a>
         </nav>
         <form method="post" action="/logout">
           <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />

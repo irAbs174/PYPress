@@ -1,0 +1,21 @@
+{% extends "public_base.html" %}
+{% block content %}
+<article>
+  <h1>{{ item.title }}</h1>
+  <p class="meta">
+    {% if item.author %}By {{ item.author.email }} · {% endif %}
+    {{ item.updated_at.strftime('%Y-%m-%d') if item.updated_at else '' }}
+  </p>
+  {% if item.categories or item.tags %}
+  <p class="taxonomies meta">
+    {% for category in item.categories %}
+    <a href="/category/{{ category.slug }}">{{ category.name }}</a>
+    {% endfor %}
+    {% for tag in item.tags %}
+    <a href="/tag/{{ tag.slug }}">#{{ tag.name }}</a>
+    {% endfor %}
+  </p>
+  {% endif %}
+  <div class="prose">{{ item.body }}</div>
+</article>
+{% endblock %}

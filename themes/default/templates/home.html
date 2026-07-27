@@ -1,0 +1,32 @@
+{% extends "public_base.html" %}
+{% block content %}
+<section>
+  <h1>Latest posts</h1>
+  {% if posts %}
+    {% for post in posts %}
+    <article class="post-card">
+      <h2><a href="/posts/{{ post.slug }}">{{ post.title }}</a></h2>
+      <p class="meta">
+        {% if post.author %}By {{ post.author.email }} · {% endif %}
+        {{ post.updated_at.strftime('%Y-%m-%d') if post.updated_at else '' }}
+      </p>
+      {% if post.excerpt %}
+      <p>{{ post.excerpt }}</p>
+      {% endif %}
+      {% if post.categories or post.tags %}
+      <p class="taxonomies meta">
+        {% for category in post.categories %}
+        <a href="/category/{{ category.slug }}">{{ category.name }}</a>
+        {% endfor %}
+        {% for tag in post.tags %}
+        <a href="/tag/{{ tag.slug }}">#{{ tag.name }}</a>
+        {% endfor %}
+      </p>
+      {% endif %}
+    </article>
+    {% endfor %}
+  {% else %}
+  <p>No published posts yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

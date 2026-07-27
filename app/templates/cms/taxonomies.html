@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block title %}Categories & Tags | PYpress{% endblock %}
+{% block content %}
+<section class="section-header">
+  <div>
+    <h1>Categories & Tags</h1>
+    <p>Organize content with taxonomies.</p>
+  </div>
+</section>
+
+{% if error %}
+<div class="alert">{{ error }}</div>
+{% endif %}
+
+<section class="stats-grid">
+  <article class="panel">
+    <h2>Categories</h2>
+    <form method="post" action="/admin/taxonomies/categories" class="stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <label>
+        <span>Name</span>
+        <input type="text" name="name" required />
+      </label>
+      <button type="submit">Add category</button>
+    </form>
+    {% if categories %}
+    <ul class="content-list">
+      {% for category in categories %}
+      <li>
+        <strong>{{ category.name }}</strong>
+        <span>{{ category.slug }}</span>
+        <form method="post" action="/admin/taxonomies/categories/{{ category.id }}/delete">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <button type="submit" class="secondary-btn">Delete</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No categories yet.</p>
+    {% endif %}
+  </article>
+
+  <article class="panel">
+    <h2>Tags</h2>
+    <form method="post" action="/admin/taxonomies/tags" class="stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <label>
+        <span>Name</span>
+        <input type="text" name="name" required />
+      </label>
+      <button type="submit">Add tag</button>
+    </form>
+    {% if tags %}
+    <ul class="content-list">
+      {% for tag in tags %}
+      <li>
+        <strong>{{ tag.name }}</strong>
+        <span>{{ tag.slug }}</span>
+        <form method="post" action="/admin/taxonomies/tags/{{ tag.id }}/delete">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <button type="submit" class="secondary-btn">Delete</button>
+        </form>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No tags yet.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

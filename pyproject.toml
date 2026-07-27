@@ -1,7 +1,7 @@
 [project]
 name = "pypress"
 version = "0.1.0"
-description = "PYpress core MVP built with FastAPI."
+description = "PYpress modular CMS foundation built with FastAPI."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

@@ -16,6 +16,7 @@
       <tr>
         <th>Title</th>
         <th>Status</th>
+        <th>Author</th>
         <th>Slug</th>
         <th>Updated</th>
         <th></th>
@@ -26,9 +27,16 @@
       <tr>
         <td>{{ item.title }}</td>
         <td>{{ item.status }}</td>
+        <td>{{ item.author.email if item.author else '—' }}</td>
         <td>{{ item.slug }}</td>
         <td>{{ item.updated_at.strftime('%Y-%m-%d %H:%M') if item.updated_at else '' }}</td>
-        <td><a href="/admin/content/{{ content_type }}/{{ item.id }}/edit">Edit</a></td>
+        <td class="actions">
+          <a href="/admin/content/{{ content_type }}/{{ item.id }}/edit">Edit</a>
+          <form method="post" action="/admin/content/{{ content_type }}/{{ item.id }}/delete" onsubmit="return confirm('Delete this item?');">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <button type="submit" class="secondary-btn">Delete</button>
+          </form>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

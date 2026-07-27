@@ -1,0 +1,112 @@
+:root {
+  --bg: #f7f4ef;
+  --ink: #1c1917;
+  --muted: #57534e;
+  --accent: #0f766e;
+  --panel: #fffdf9;
+  --line: #e7e5e4;
+  --font-display: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --font-body: "Source Sans 3", "Segoe UI", sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 40%),
+    linear-gradient(180deg, #f7f4ef 0%, #efe8dd 100%);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.site-shell {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.site-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.tagline {
+  color: var(--muted);
+  margin: 0.25rem 0 0;
+}
+
+.nav a {
+  margin-left: 1rem;
+  color: var(--muted);
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  line-height: 1.2;
+}
+
+.post-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.25rem 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.post-card h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.45rem;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.prose {
+  white-space: pre-wrap;
+}
+
+.taxonomies a {
+  margin-right: 0.5rem;
+}
+
+.site-footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.plugin-note {
+  margin-top: 0.75rem;
+  font-style: italic;
+}

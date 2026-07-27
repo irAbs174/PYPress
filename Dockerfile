@@ -13,6 +13,9 @@ COPY pyproject.toml README.md alembic.ini ./
 COPY app ./app
 COPY migrations ./migrations
 COPY scripts ./scripts
+COPY themes ./themes
+COPY plugins ./plugins
+COPY uploads ./uploads
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir .

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Themes | PYpress{% endblock %}
+{% block content %}
+<section class="section-header">
+  <div>
+    <h1>Themes</h1>
+    <p>Activate a public theme for your site.</p>
+  </div>
+</section>
+
+<section class="panel">
+  {% if themes %}
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Version</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for theme in themes %}
+      <tr>
+        <td>{{ theme.name }}</td>
+        <td>{{ theme.version }}</td>
+        <td>{{ theme.description }}</td>
+        <td>{% if theme.name == active_theme %}Active{% else %}Available{% endif %}</td>
+        <td>
+          {% if theme.name != active_theme %}
+          <form method="post" action="/admin/themes/activate">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+            <input type="hidden" name="theme_name" value="{{ theme.name }}" />
+            <button type="submit">Activate</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No themes found in <code>themes/</code>.</p>
+  {% endif %}
+</section>
+{% endblock %}
