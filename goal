@@ -1,0 +1,187 @@
+# Project Prompt: PYpress
+
+## Project Name
+
+**PYpress**
+
+## Project Overview
+
+PYpress is a modern, open-source web development platform inspired by WordPress, but built with Python. It provides a powerful foundation for developers to create websites, blogs, business applications, e-commerce stores, and custom web platforms with a modular and extensible architecture.
+
+## Vision
+
+Create a fast, secure, lightweight, and developer-friendly CMS and web application platform that combines the simplicity of WordPress with the flexibility and power of Python.
+
+## Core Features
+
+### Authentication
+
+* User registration and login
+* Role-based access control (Admin, Editor, Author, Subscriber)
+* Email verification
+* Password reset
+* Two-factor authentication (optional)
+
+### Dashboard
+
+* Modern admin interface
+* Website analytics
+* Recent activity
+* System notifications
+* Quick actions
+
+### Page Builder
+
+* Drag-and-drop page editor
+* Responsive layouts
+* Custom sections
+* Reusable blocks
+* Live preview
+
+### Content Management
+
+* Posts
+* Pages
+* Categories
+* Tags
+* Media library
+* Drafts and scheduling
+* Rich text editor
+
+### Theme System
+
+* Install themes
+* Customize themes
+* Theme templates
+* Theme marketplace support
+* Live customization
+
+### Plugin System
+
+* Install and uninstall plugins
+* Plugin marketplace
+* Plugin API
+* Event hooks
+* Middleware support
+
+### Database
+
+* SQLAlchemy ORM
+* SQLite (development)
+* PostgreSQL
+* MySQL
+* Database migrations
+
+### API
+
+* REST API
+* GraphQL (optional)
+* API authentication
+* Webhooks
+
+### File Manager
+
+* Upload images
+* Upload videos
+* Upload documents
+* Folder organization
+* Image optimization
+
+### SEO Tools
+
+* Meta title
+* Meta description
+* XML sitemap
+* Robots.txt
+* Open Graph tags
+
+### Security
+
+* CSRF protection
+* XSS protection
+* SQL injection prevention
+* Rate limiting
+* Secure password hashing
+* Audit logs
+
+### Performance
+
+* Page caching
+* Asset optimization
+* Lazy loading
+* Compression
+* CDN support
+
+### Developer Tools
+
+* CLI utility
+* Plugin generator
+* Theme generator
+* Debug mode
+* Logging
+* Configuration management
+
+### E-Commerce (Future Module)
+
+* Products
+* Shopping cart
+* Orders
+* Payments
+* Coupons
+* Inventory management
+
+## Recommended Technology Stack
+
+* **Backend:** Python 3.12+
+* **Framework:** FastAPI
+* **Template Engine:** Jinja2
+* **ORM:** SQLAlchemy
+* **Database:** PostgreSQL
+* **Authentication:** JWT + Session Authentication
+* **Frontend:** HTML5, CSS3, JavaScript, TypeScript
+* **CSS Framework:** Tailwind CSS
+* **UI Components:** Alpine.js or Vue.js
+* **Package Manager:** uv or pip
+* **Task Queue:** Celery + Redis
+* **Server:** Uvicorn
+* **Deployment:** Docker + Nginx
+
+## Project Structure
+
+```text
+PYpress/
+│
+├── app/
+│   ├── auth/
+│   ├── admin/
+│   ├── api/
+│   ├── core/
+│   ├── cms/
+│   ├── themes/
+│   ├── plugins/
+│   ├── media/
+│   ├── templates/
+│   ├── static/
+│   └── database/
+│
+├── config/
+├── migrations/
+├── plugins/
+├── themes/
+├── uploads/
+├── tests/
+├── docs/
+├── scripts/
+├── requirements.txt
+├── pyproject.toml
+└── README.md
+```
+
+## Goals
+
+* Build a Python-based alternative to WordPress.
+* Support modular plugins and themes.
+* Provide a clean, modern admin dashboard.
+* Offer a scalable architecture for websites and web applications.
+* Deliver high performance, strong security, and excellent developer experience.
+* Make installation and deployment simple for beginners while remaining powerful for advanced developers.
