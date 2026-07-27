@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{% if item %}Edit{% else %}New{% endif %} {{ title }} | PYpress{% endblock %}
+{% block content %}
+<section class="panel editor-panel">
+  <div class="section-header">
+    <div>
+      <h1>{% if item %}Edit{% else %}New{% endif %} {{ title }}</h1>
+      <p>{% if item %}Update{% else %}Create{% endif %} your {{ title|lower }} content.</p>
+    </div>
+    <a href="/admin/content/{{ content_type }}" class="secondary-btn button-link">Back</a>
+  </div>
+  {% if error %}
+  <div class="alert">{{ error }}</div>
+  {% endif %}
+  <form method="post" action="{% if item %}/admin/content/{{ content_type }}/{{ item.id }}{% else %}/admin/content/{{ content_type }}{% endif %}" class="stack">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+    <label>
+      <span>Title</span>
+      <input type="text" name="title" value="{{ item.title if item else '' }}" required />
+    </label>
+    <label>
+      <span>Body</span>
+      <textarea name="body" rows="12">{{ item.body if item else '' }}</textarea>
+    </label>
+    <label>
+      <span>Status</span>
+      <select name="status_value">
+        <option value="draft" {% if not item or item.status == 'draft' %}selected{% endif %}>Draft</option>
+        <option value="published" {% if item and item.status == 'published' %}selected{% endif %}>Published</option>
+      </select>
+    </label>
+    <button type="submit">{% if item %}Save changes{% else %}Create {{ title|lower }}{% endif %}</button>
+  </form>
+</section>
+{% endblock %}

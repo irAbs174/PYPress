@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}PYpress{% endblock %}</title>
+    <link rel="stylesheet" href="{{ request.url_for('static', path='css/app.css') }}" />
+    <script defer src="{{ request.url_for('static', path='js/app.js') }}"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-row">
+        <a class="brand" href="/admin">PYpress</a>
+        {% if current_user %}
+        <nav class="nav-links">
+          <a href="/admin">Dashboard</a>
+          <a href="/admin/content/post">Posts</a>
+          <a href="/admin/content/page">Pages</a>
+        </nav>
+        <form method="post" action="/logout">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <button type="submit" class="secondary-btn">Log out</button>
+        </form>
+        {% endif %}
+      </div>
+    </header>
+    <main class="container">
+      {% block content %}{% endblock %}
+    </main>
+  </body>
+</html>

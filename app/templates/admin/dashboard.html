@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Dashboard | PYpress{% endblock %}
+{% block content %}
+<section class="hero-row">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Signed in as {{ current_user.email }} with the {{ current_user.role }} role.</p>
+  </div>
+</section>
+
+<section class="stats-grid">
+  <article class="panel stat-card">
+    <h2>{{ total_posts }}</h2>
+    <p>Posts</p>
+  </article>
+  <article class="panel stat-card">
+    <h2>{{ total_pages }}</h2>
+    <p>Pages</p>
+  </article>
+  <article class="panel stat-card">
+    <h2>{{ published_count }}</h2>
+    <p>Published items</p>
+  </article>
+</section>
+
+<section class="panel">
+  <div class="section-header">
+    <h2>Quick actions</h2>
+    <div class="actions">
+      <a href="/admin/content/post/new" class="button-link">New post</a>
+      <a href="/admin/content/page/new" class="button-link secondary-btn">New page</a>
+    </div>
+  </div>
+  <h3>Recent content</h3>
+  {% if recent_items %}
+  <ul class="content-list">
+    {% for item in recent_items %}
+    <li>
+      <strong>{{ item.title }}</strong>
+      <span>{{ item.content_type }} / {{ item.status }}</span>
+      <a href="/admin/content/{{ item.content_type }}/{{ item.id }}/edit">Edit</a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No content created yet.</p>
+  {% endif %}
+</section>
+{% endblock %}

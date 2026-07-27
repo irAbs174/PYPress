@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login | PYpress{% endblock %}
+{% block content %}
+<section class="auth-shell">
+  <div class="panel auth-panel">
+    <h1>Admin sign in</h1>
+    <p>Use the seeded administrator account to access the dashboard.</p>
+    {% if error %}
+    <div class="alert">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="/login" class="stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" required />
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" required />
+      </label>
+      <button type="submit">Sign in</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

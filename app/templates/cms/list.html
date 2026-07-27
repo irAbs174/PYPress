@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} | PYpress{% endblock %}
+{% block content %}
+<section class="section-header">
+  <div>
+    <h1>{{ title }}</h1>
+    <p>Manage {{ title|lower }} for your site.</p>
+  </div>
+  <a href="/admin/content/{{ content_type }}/new" class="button-link">Create {{ title[:-1]|lower }}</a>
+</section>
+
+<section class="panel">
+  {% if items %}
+  <table class="content-table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Status</th>
+        <th>Slug</th>
+        <th>Updated</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in items %}
+      <tr>
+        <td>{{ item.title }}</td>
+        <td>{{ item.status }}</td>
+        <td>{{ item.slug }}</td>
+        <td>{{ item.updated_at.strftime('%Y-%m-%d %H:%M') if item.updated_at else '' }}</td>
+        <td><a href="/admin/content/{{ content_type }}/{{ item.id }}/edit">Edit</a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No {{ title|lower }} yet.</p>
+  {% endif %}
+</section>
+{% endblock %}
