@@ -5,8 +5,9 @@ from fastapi.responses import Response
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
-from app.cms.models import Category, ContentItem, ContentStatus, ContentType, Tag
+from app.cms.models import Category, ContentItem, ContentType, Tag
 from app.cms.settings import get_setting
+from app.cms.visibility import publicly_visible_clause
 from app.core.config import get_settings
 from app.database.session import get_db_session
 from app.plugins.hooks import HookRegistry
@@ -20,7 +21,7 @@ def published_posts_query():
         select(ContentItem)
         .where(
             ContentItem.content_type == ContentType.POST.value,
-            ContentItem.status == ContentStatus.PUBLISHED.value,
+            publicly_visible_clause(),
         )
         .options(selectinload(ContentItem.categories), selectinload(ContentItem.tags), selectinload(ContentItem.author))
         .order_by(ContentItem.updated_at.desc())
@@ -40,8 +41,17 @@ def site_context(request: Request, session: Session, **extra):
     return hooks.apply_filters("public.before_render", context, request)
 
 
+def gate_public_access(request: Request, session: Session):
+    """Allow plugins to short-circuit public pages (e.g. maintenance mode)."""
+    hooks: HookRegistry = request.app.state.hooks
+    return hooks.apply_filters("public.access", None, request, session)
+
+
 @router.get("/")
 def home(request: Request, session: Session = Depends(get_db_session)):
+    blocked = gate_public_access(request, session)
+    if blocked is not None:
+        return blocked
     posts = session.scalars(published_posts_query()).all()
     preview_posts = posts[:3]
     total_posts = session.scalar(
@@ -71,12 +81,15 @@ def home(request: Request, session: Session = Depends(get_db_session)):
 
 @router.get("/posts/{slug}")
 def single_post(slug: str, request: Request, session: Session = Depends(get_db_session)):
+    blocked = gate_public_access(request, session)
+    if blocked is not None:
+        return blocked
     item = session.scalar(
         select(ContentItem)
         .where(
             ContentItem.slug == slug,
             ContentItem.content_type == ContentType.POST.value,
-            ContentItem.status == ContentStatus.PUBLISHED.value,
+            publicly_visible_clause(),
         )
         .options(selectinload(ContentItem.categories), selectinload(ContentItem.tags), selectinload(ContentItem.author))
     )
@@ -91,12 +104,15 @@ def single_post(slug: str, request: Request, session: Session = Depends(get_db_s
 
 @router.get("/pages/{slug}")
 def single_page(slug: str, request: Request, session: Session = Depends(get_db_session)):
+    blocked = gate_public_access(request, session)
+    if blocked is not None:
+        return blocked
     item = session.scalar(
         select(ContentItem)
         .where(
             ContentItem.slug == slug,
             ContentItem.content_type == ContentType.PAGE.value,
-            ContentItem.status == ContentStatus.PUBLISHED.value,
+            publicly_visible_clause(),
         )
         .options(selectinload(ContentItem.categories), selectinload(ContentItem.tags), selectinload(ContentItem.author))
     )
@@ -111,6 +127,9 @@ def single_page(slug: str, request: Request, session: Session = Depends(get_db_s
 
 @router.get("/category/{slug}")
 def category_archive(slug: str, request: Request, session: Session = Depends(get_db_session)):
+    blocked = gate_public_access(request, session)
+    if blocked is not None:
+        return blocked
     category = session.scalar(select(Category).where(Category.slug == slug))
     if category is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found.")
@@ -132,6 +151,9 @@ def category_archive(slug: str, request: Request, session: Session = Depends(get
 
 @router.get("/tag/{slug}")
 def tag_archive(slug: str, request: Request, session: Session = Depends(get_db_session)):
+    blocked = gate_public_access(request, session)
+    if blocked is not None:
+        return blocked
     tag = session.scalar(select(Tag).where(Tag.slug == slug))
     if tag is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tag not found.")
@@ -161,7 +183,7 @@ def robots_txt(request: Request):
 def sitemap_xml(request: Request, session: Session = Depends(get_db_session)):
     items = session.scalars(
         select(ContentItem)
-        .where(ContentItem.status == ContentStatus.PUBLISHED.value)
+        .where(publicly_visible_clause())
         .order_by(ContentItem.updated_at.desc())
     ).all()
     urls = [f"  <url><loc>{request.base_url}</loc></url>"]

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.auth.models import User, UserRole
 from app.cms.models import Category, ContentItem, ContentStatus, ContentType, Tag
+from app.cms.visibility import normalize_status_and_publish_at, parse_publish_at
 from app.core.dependencies import require_roles
 from app.core.security import ensure_csrf_token, validate_csrf
 from app.core.utils import slugify
@@ -44,6 +45,9 @@ def form_context(
     selected_tag_ids: set[int] | None = None,
     error: str | None = None,
 ) -> dict[str, Any]:
+    publish_at_value = ""
+    if item and item.publish_at:
+        publish_at_value = item.publish_at.strftime("%Y-%m-%dT%H:%M")
     return {
         "current_user": user,
         "csrf_token": ensure_csrf_token(request),
@@ -53,6 +57,7 @@ def form_context(
         "tags": tags or [],
         "selected_category_ids": selected_category_ids or set(),
         "selected_tag_ids": selected_tag_ids or set(),
+        "publish_at_value": publish_at_value,
         "error": error,
         "title": "Post" if content_type == ContentType.POST.value else "Page",
     }
@@ -167,6 +172,7 @@ def create_item(
     meta_title: Annotated[str, Form()] = "",
     meta_description: Annotated[str, Form()] = "",
     status_value: Annotated[str, Form()] = ContentStatus.DRAFT.value,
+    publish_at: Annotated[str, Form()] = "",
     category_ids: Annotated[list[str], Form()] = [],
     tag_ids: Annotated[list[str], Form()] = [],
     user: User = Depends(require_roles(UserRole.ADMIN.value, UserRole.EDITOR.value, UserRole.AUTHOR.value)),
@@ -198,6 +204,25 @@ def create_item(
             status_code=400,
         )
 
+    parsed_publish_at = parse_publish_at(publish_at)
+    status_value, parsed_publish_at = normalize_status_and_publish_at(status_value, parsed_publish_at)
+    if status_value == ContentStatus.SCHEDULED.value and parsed_publish_at is None:
+        return request.app.state.templates.TemplateResponse(
+            request,
+            "cms/form.html",
+            form_context(
+                request,
+                user,
+                content_type,
+                categories=categories,
+                tags=tags,
+                selected_category_ids=selected_category_ids,
+                selected_tag_ids=selected_tag_ids,
+                error="Scheduled content requires a publish date.",
+            ),
+            status_code=400,
+        )
+
     hooks: HookRegistry = request.app.state.hooks
     item = ContentItem(
         title=title,
@@ -207,9 +232,8 @@ def create_item(
         meta_title=meta_title.strip() or None,
         meta_description=meta_description.strip() or None,
         content_type=content_type,
-        status=status_value
-        if status_value in {ContentStatus.DRAFT.value, ContentStatus.PUBLISHED.value}
-        else ContentStatus.DRAFT.value,
+        status=status_value,
+        publish_at=parsed_publish_at,
         author_id=user.id,
     )
     assign_taxonomies(session, item, list(selected_category_ids), list(selected_tag_ids))
@@ -262,6 +286,7 @@ def update_item(
     meta_title: Annotated[str, Form()] = "",
     meta_description: Annotated[str, Form()] = "",
     status_value: Annotated[str, Form()] = ContentStatus.DRAFT.value,
+    publish_at: Annotated[str, Form()] = "",
     category_ids: Annotated[list[str], Form()] = [],
     tag_ids: Annotated[list[str], Form()] = [],
     user: User = Depends(require_roles(UserRole.ADMIN.value, UserRole.EDITOR.value, UserRole.AUTHOR.value)),
@@ -272,16 +297,16 @@ def update_item(
     item = get_content_or_404(session, item_id, content_type)
     hooks: HookRegistry = request.app.state.hooks
 
+    parsed_publish_at = parse_publish_at(publish_at)
+    status_value, parsed_publish_at = normalize_status_and_publish_at(status_value, parsed_publish_at)
+
     item.title = title.strip()
     item.body = body.strip()
     item.excerpt = excerpt.strip() or None
     item.meta_title = meta_title.strip() or None
     item.meta_description = meta_description.strip() or None
-    item.status = (
-        status_value
-        if status_value in {ContentStatus.DRAFT.value, ContentStatus.PUBLISHED.value}
-        else ContentStatus.DRAFT.value
-    )
+    item.status = status_value
+    item.publish_at = parsed_publish_at
     assign_taxonomies(session, item, parse_id_list(category_ids), parse_id_list(tag_ids))
     hooks.do_action("content.before_save", item, user, is_new=False)
     session.commit()

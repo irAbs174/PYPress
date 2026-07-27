@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.auth.models import User, UserRole
 from app.cms.models import Category, ContentItem, ContentStatus, ContentType, Tag
 from app.cms.router import unique_slug
-from app.core.dependencies import get_current_user, require_roles
+from app.core.dependencies import require_roles
 from app.core.security import ensure_csrf_token, validate_csrf
 from app.database.session import get_db_session
 from app.plugins.hooks import HookRegistry
@@ -56,7 +56,7 @@ def dashboard_context(
 @router.get("")
 def dashboard(
     request: Request,
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_roles(UserRole.ADMIN.value, UserRole.EDITOR.value, UserRole.AUTHOR.value)),
     session: Session = Depends(get_db_session),
 ):
     return request.app.state.templates.TemplateResponse(

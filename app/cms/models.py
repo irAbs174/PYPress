@@ -11,6 +11,7 @@ from app.database.base import Base
 class ContentStatus(StrEnum):
     DRAFT = "draft"
     PUBLISHED = "published"
+    SCHEDULED = "scheduled"
 
 
 class ContentType(StrEnum):
@@ -71,6 +72,7 @@ class ContentItem(Base):
     meta_description: Mapped[Optional[str]] = mapped_column(String(512), nullable=True)
     content_type: Mapped[str] = mapped_column(String(16), index=True)
     status: Mapped[str] = mapped_column(String(16), default=ContentStatus.DRAFT.value, index=True)
+    publish_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True, index=True)
     author_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

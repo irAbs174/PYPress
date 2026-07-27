@@ -212,6 +212,24 @@
           <i class="fa-solid fa-puzzle-piece w-6"></i>
           <span class="font-medium">Plugins</span>
         </a>
+        {% if current_user.role == 'admin' %}
+        <a
+          href="/admin/users"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith('/admin/users') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-solid fa-users w-6"></i>
+          <span class="font-medium">Users</span>
+        </a>
+        {% endif %}
+        {% for item in plugin_nav_items or [] %}
+        <a
+          href="{{ item.href }}"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith(item.href) %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="{{ item.icon or 'fa-solid fa-puzzle-piece' }} w-6"></i>
+          <span class="font-medium">{{ item.label }}</span>
+        </a>
+        {% endfor %}
         <a
           href="/"
           class="flex items-center px-4 py-2.5 rounded-lg transition-colors text-textmuted hover:text-white hover:bg-white/5"
@@ -268,6 +286,12 @@
         <a href="/admin/taxonomies" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Categories</a>
         <a href="/admin/themes" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Themes</a>
         <a href="/admin/plugins" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Plugins</a>
+        {% if current_user.role == 'admin' %}
+        <a href="/admin/users" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Users</a>
+        {% endif %}
+        {% for item in plugin_nav_items or [] %}
+        <a href="{{ item.href }}" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">{{ item.label }}</a>
+        {% endfor %}
         <a href="/" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">View site</a>
       </div>
 

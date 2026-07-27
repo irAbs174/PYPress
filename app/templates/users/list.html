@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+{% block title %}Users | PYpress{% endblock %}
+{% block page_heading %}Users{% endblock %}
+{% block content %}
+<section class="section-header mb-6">
+  <div>
+    <p class="text-textmuted">Create accounts and assign roles.</p>
+  </div>
+</section>
+
+{% if error %}
+<div class="alert mb-4">{{ error }}</div>
+{% endif %}
+
+<div class="grid gap-6 lg:grid-cols-2">
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h2 class="text-lg font-semibold mb-4">{% if edit_user %}Edit user{% else %}Add user{% endif %}</h2>
+    <form
+      method="post"
+      action="{% if edit_user %}/admin/users/{{ edit_user.id }}{% else %}/admin/users{% endif %}"
+      class="stack"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <label>
+        <span>Email</span>
+        <input type="email" name="email" value="{{ edit_user.email if edit_user else '' }}" required />
+      </label>
+      <label>
+        <span>Password{% if edit_user %} <span class="text-textmuted">(leave blank to keep)</span>{% endif %}</span>
+        <input type="password" name="password" {% if not edit_user %}required minlength="8"{% else %}minlength="8"{% endif %} />
+      </label>
+      <label>
+        <span>Role</span>
+        <select name="role">
+          {% for role in roles %}
+          <option value="{{ role }}" {% if edit_user and edit_user.role == role %}selected{% elif not edit_user and role == 'subscriber' %}selected{% endif %}>{{ role }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <div class="actions">
+        <button type="submit">{% if edit_user %}Save changes{% else %}Create user{% endif %}</button>
+        {% if edit_user %}
+        <a href="/admin/users" class="secondary-btn button-link">Cancel</a>
+        {% endif %}
+      </div>
+    </form>
+  </section>
+
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h2 class="text-lg font-semibold mb-4">All users</h2>
+    {% if users %}
+    <table class="content-table">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Created</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td>{{ user.email }}</td>
+          <td>{{ user.role }}</td>
+          <td>{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else '' }}</td>
+          <td class="actions">
+            <a href="/admin/users/{{ user.id }}/edit">Edit</a>
+            {% if user.id != current_user.id %}
+            <form method="post" action="/admin/users/{{ user.id }}/delete" onsubmit="return confirm('Delete this user?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+              <button type="submit" class="secondary-btn">Delete</button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-textmuted">No users yet.</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

@@ -5,6 +5,6 @@
     <i class="fa-solid fa-arrow-left text-xs"></i> Home
   </a>
   <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-6">{{ item.title }}</h1>
-  <div class="prose-body bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8">{{ item.body }}</div>
+  <div class="prose-body bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8">{{ item.body | safe }}</div>
 </article>
 {% endblock %}

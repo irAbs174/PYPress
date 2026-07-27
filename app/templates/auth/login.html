@@ -3,8 +3,8 @@
 {% block content %}
 <section class="auth-shell">
   <div class="panel auth-panel">
-    <h1>Admin sign in</h1>
-    <p>Use the seeded administrator account to access the dashboard.</p>
+    <h1>Sign in</h1>
+    <p>Access the admin dashboard or your subscriber account.</p>
     {% if error %}
     <div class="alert">{{ error }}</div>
     {% endif %}
@@ -20,6 +20,7 @@
       </label>
       <button type="submit">Sign in</button>
     </form>
+    <p style="margin-top: 1rem;">Need an account? <a href="/register">Register</a></p>
   </div>
 </section>
 {% endblock %}

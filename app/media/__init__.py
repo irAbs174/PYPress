@@ -69,6 +69,25 @@ def list_media(
     )
 
 
+@router.get("/json")
+def list_media_json(
+    user: User = Depends(require_roles(UserRole.ADMIN.value, UserRole.EDITOR.value, UserRole.AUTHOR.value)),
+    session: Session = Depends(get_db_session),
+):
+    assets = session.scalars(select(MediaAsset).order_by(MediaAsset.created_at.desc())).all()
+    return [
+        {
+            "id": asset.id,
+            "filename": asset.filename,
+            "original_name": asset.original_name,
+            "mime_type": asset.mime_type,
+            "url": f"/uploads/{asset.filename}",
+            "size": asset.size,
+        }
+        for asset in assets
+    ]
+
+
 @router.post("/upload")
 async def upload_media(
     request: Request,

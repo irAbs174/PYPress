@@ -2,12 +2,14 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.admin.router import router as admin_router
+from app.api.router import router as api_router
 from app.auth.router import router as auth_router
+from app.auth.users_router import router as users_router
 from app.cms.public_router import router as public_router
 from app.cms.router import router as cms_router
 from app.cms.router import taxonomy_router
@@ -73,6 +75,8 @@ def create_app() -> FastAPI:
     app.include_router(media_router)
     app.include_router(themes_router)
     app.include_router(plugins_router)
+    app.include_router(users_router)
+    app.include_router(api_router)
 
     @app.get("/theme-static/{file_path:path}", include_in_schema=False)
     def theme_static(file_path: str, request: Request):
@@ -87,7 +91,9 @@ def create_app() -> FastAPI:
         return FileResponse(candidate)
 
     @app.exception_handler(401)
-    async def handle_unauthorized(_: Request, __):
+    async def handle_unauthorized(request: Request, __):
+        if request.url.path.startswith("/api/"):
+            return JSONResponse({"detail": "Authentication required."}, status_code=401)
         return RedirectResponse(url="/login", status_code=303)
 
     return app

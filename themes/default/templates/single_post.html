@@ -8,6 +8,7 @@
   <p class="text-sm text-slate-500 mb-6">
     {% if item.author %}By {{ item.author.email }} · {% endif %}
     {{ item.updated_at.strftime('%b %d, %Y') if item.updated_at else '' }}
+    {% if reading_time_label %} · {{ reading_time_label }}{% endif %}
   </p>
   {% if item.categories or item.tags %}
   <div class="flex flex-wrap gap-2 mb-8">
@@ -19,6 +20,6 @@
     {% endfor %}
   </div>
   {% endif %}
-  <div class="prose-body bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8">{{ item.body }}</div>
+  <div class="prose-body bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8">{{ item.body | safe }}</div>
 </article>
 {% endblock %}

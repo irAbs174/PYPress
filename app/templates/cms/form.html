@@ -1,6 +1,42 @@
 {% extends "admin/base.html" %}
 {% block title %}{% if item %}Edit{% else %}New{% endif %} {{ title }} | PYpress{% endblock %}
 {% block page_heading %}{% if item %}Edit{% else %}New{% endif %} {{ title }}{% endblock %}
+{% block head %}
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+<style>
+  #quill-editor {
+    background: #12141c;
+    color: #f3f4f6;
+    border: 1px solid #2a2f3d;
+    border-radius: 0 0 0.5rem 0.5rem;
+    min-height: 280px;
+  }
+  .ql-toolbar.ql-snow {
+    background: #1a1d27;
+    border: 1px solid #2a2f3d;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+  .ql-snow .ql-stroke { stroke: #9ca3af; }
+  .ql-snow .ql-fill { fill: #9ca3af; }
+  .ql-snow .ql-picker { color: #9ca3af; }
+  .media-picker {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.65);
+    display: none; align-items: center; justify-content: center; z-index: 50; padding: 1rem;
+  }
+  .media-picker.open { display: flex; }
+  .media-picker-panel {
+    background: #1e212b; border: 1px solid #2a2f3d; border-radius: 0.75rem;
+    max-width: 720px; width: 100%; max-height: 80vh; overflow: auto; padding: 1.25rem;
+  }
+  .media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+  .media-grid button {
+    background: #12141c; border: 1px solid #2a2f3d; border-radius: 0.5rem; padding: 0.5rem;
+    color: #f3f4f6; cursor: pointer; text-align: left; font: inherit;
+  }
+  .media-grid img { width: 100%; height: 80px; object-fit: cover; border-radius: 0.35rem; margin-bottom: 0.35rem; }
+</style>
+{% endblock %}
 {% block content %}
 <section class="bg-cardbg border border-cardborder rounded-xl p-6 editor-panel">
   <div class="section-header mb-4">
@@ -12,7 +48,7 @@
   {% if error %}
   <div class="alert">{{ error }}</div>
   {% endif %}
-  <form method="post" action="{% if item %}/admin/content/{{ content_type }}/{{ item.id }}{% else %}/admin/content/{{ content_type }}{% endif %}" class="stack">
+  <form id="content-form" method="post" action="{% if item %}/admin/content/{{ content_type }}/{{ item.id }}{% else %}/admin/content/{{ content_type }}{% endif %}" class="stack">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
     <label>
       <span>Title</span>
@@ -22,10 +58,14 @@
       <span>Excerpt</span>
       <textarea name="excerpt" rows="3">{{ item.excerpt if item and item.excerpt else '' }}</textarea>
     </label>
-    <label>
-      <span>Body</span>
-      <textarea name="body" rows="12">{{ item.body if item else '' }}</textarea>
-    </label>
+    <div class="stack">
+      <div class="actions">
+        <label style="margin:0;"><span>Body</span></label>
+        <button type="button" class="secondary-btn" id="insert-media-btn">Insert media</button>
+      </div>
+      <div id="quill-editor">{% if item %}{{ item.body | safe }}{% endif %}</div>
+      <textarea id="body-editor" name="body" rows="12" style="display:none;">{{ item.body if item else '' }}</textarea>
+    </div>
     <label>
       <span>Meta title</span>
       <input type="text" name="meta_title" value="{{ item.meta_title if item and item.meta_title else '' }}" />
@@ -58,10 +98,15 @@
     {% endif %}
     <label>
       <span>Status</span>
-      <select name="status_value">
+      <select name="status_value" id="status-value">
         <option value="draft" {% if not item or item.status == 'draft' %}selected{% endif %}>Draft</option>
         <option value="published" {% if item and item.status == 'published' %}selected{% endif %}>Published</option>
+        <option value="scheduled" {% if item and item.status == 'scheduled' %}selected{% endif %}>Scheduled</option>
       </select>
+    </label>
+    <label id="publish-at-field">
+      <span>Publish at</span>
+      <input type="datetime-local" name="publish_at" value="{{ publish_at_value }}" />
     </label>
     <button type="submit">{% if item %}Save changes{% else %}Create {{ title|lower }}{% endif %}</button>
   </form>
@@ -72,4 +117,91 @@
   </form>
   {% endif %}
 </section>
+
+<div class="media-picker" id="media-picker" role="dialog" aria-modal="true" aria-label="Insert media">
+  <div class="media-picker-panel">
+    <div class="section-header">
+      <h2 class="text-lg font-semibold">Media library</h2>
+      <button type="button" class="secondary-btn" id="close-media-picker">Close</button>
+    </div>
+    <div class="media-grid" id="media-grid"></div>
+    <p class="text-textmuted" id="media-empty" style="display:none;margin-top:1rem;">No media yet. Upload files in Media.</p>
+  </div>
+</div>
+
+<script>
+  const statusSelect = document.getElementById("status-value");
+  const publishField = document.getElementById("publish-at-field");
+  function syncPublishField() {
+    publishField.style.display = statusSelect.value === "scheduled" ? "grid" : "none";
+  }
+  statusSelect.addEventListener("change", syncPublishField);
+  syncPublishField();
+
+  const bodyField = document.getElementById("body-editor");
+  const quill = new Quill("#quill-editor", {
+    theme: "snow",
+    modules: {
+      toolbar: [
+        [{ header: [1, 2, 3, false] }],
+        ["bold", "italic", "underline", "link"],
+        [{ list: "ordered" }, { list: "bullet" }],
+        ["blockquote", "code-block", "image"],
+        ["clean"],
+      ],
+    },
+  });
+  window.__pypressEditor = quill;
+
+  document.getElementById("content-form").addEventListener("submit", () => {
+    bodyField.value = quill.root.innerHTML;
+  });
+
+  const picker = document.getElementById("media-picker");
+  const grid = document.getElementById("media-grid");
+  const empty = document.getElementById("media-empty");
+
+  async function openMediaPicker() {
+    picker.classList.add("open");
+    grid.innerHTML = "";
+    empty.style.display = "none";
+    const response = await fetch("/admin/media/json");
+    if (!response.ok) {
+      empty.textContent = "Could not load media.";
+      empty.style.display = "block";
+      return;
+    }
+    const assets = await response.json();
+    if (!assets.length) {
+      empty.style.display = "block";
+      return;
+    }
+    for (const asset of assets) {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      const isImage = (asset.mime_type || "").startsWith("image/");
+      if (isImage) {
+        btn.innerHTML = `<img src="${asset.url}" alt="" /><span>${asset.original_name}</span>`;
+      } else {
+        btn.innerHTML = `<span>${asset.original_name}</span>`;
+      }
+      btn.addEventListener("click", () => {
+        const range = quill.getSelection(true) || { index: quill.getLength() };
+        if (isImage) {
+          quill.insertEmbed(range.index, "image", asset.url, "user");
+        } else {
+          quill.insertText(range.index, asset.original_name, "link", asset.url, "user");
+        }
+        picker.classList.remove("open");
+      });
+      grid.appendChild(btn);
+    }
+  }
+
+  document.getElementById("insert-media-btn").addEventListener("click", openMediaPicker);
+  document.getElementById("close-media-picker").addEventListener("click", () => picker.classList.remove("open"));
+  picker.addEventListener("click", (event) => {
+    if (event.target === picker) picker.classList.remove("open");
+  });
+</script>
 {% endblock %}
