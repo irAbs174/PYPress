@@ -1,49 +1,117 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% block title %}Dashboard | PYpress{% endblock %}
+{% block page_heading %}Dashboard{% endblock %}
 {% block content %}
-<section class="hero-row">
-  <div>
-    <h1>Dashboard</h1>
-    <p>Signed in as {{ current_user.email }} with the {{ current_user.role }} role.</p>
-  </div>
-</section>
-
-<section class="stats-grid">
-  <article class="panel stat-card">
-    <h2>{{ total_posts }}</h2>
-    <p>Posts</p>
-  </article>
-  <article class="panel stat-card">
-    <h2>{{ total_pages }}</h2>
-    <p>Pages</p>
-  </article>
-  <article class="panel stat-card">
-    <h2>{{ published_count }}</h2>
-    <p>Published items</p>
-  </article>
-</section>
-
-<section class="panel">
-  <div class="section-header">
-    <h2>Quick actions</h2>
-    <div class="actions">
-      <a href="/admin/content/post/new" class="button-link">New post</a>
-      <a href="/admin/content/page/new" class="button-link secondary-btn">New page</a>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="bg-cardbg border border-cardborder rounded-xl p-6 flex justify-between items-start">
+    <div>
+      <h2 class="text-4xl font-bold text-blue-400 mb-1">{{ total_posts }}</h2>
+      <p class="text-textmuted text-sm">Posts</p>
+    </div>
+    <div class="text-blue-400 opacity-80">
+      <i class="fa-solid fa-file-alt text-xl"></i>
     </div>
   </div>
-  <h3>Recent content</h3>
-  {% if recent_items %}
-  <ul class="content-list">
-    {% for item in recent_items %}
-    <li>
-      <strong>{{ item.title }}</strong>
-      <span>{{ item.content_type }} / {{ item.status }}</span>
-      <a href="/admin/content/{{ item.content_type }}/{{ item.id }}/edit">Edit</a>
-    </li>
-    {% endfor %}
-  </ul>
-  {% else %}
-  <p>No content created yet.</p>
-  {% endif %}
-</section>
+
+  <div class="bg-cardbg border border-cardborder rounded-xl p-6 flex justify-between items-start">
+    <div>
+      <h2 class="text-4xl font-bold text-green-400 mb-1">{{ total_pages }}</h2>
+      <p class="text-textmuted text-sm">Pages</p>
+    </div>
+    <div class="text-green-400 opacity-80">
+      <i class="fa-regular fa-file text-xl"></i>
+    </div>
+  </div>
+
+  <div class="bg-cardbg border border-cardborder rounded-xl p-6 flex justify-between items-start">
+    <div>
+      <h2 class="text-4xl font-bold text-yellow-400 mb-1">{{ total_categories }}</h2>
+      <p class="text-textmuted text-sm">Categories</p>
+    </div>
+    <div class="text-yellow-400 opacity-80">
+      <i class="fa-regular fa-folder-open text-xl"></i>
+    </div>
+  </div>
+
+  <div class="bg-cardbg border border-cardborder rounded-xl p-6 flex justify-between items-start">
+    <div>
+      <h2 class="text-4xl font-bold text-pink-400 mb-1">{{ total_tags }}</h2>
+      <p class="text-textmuted text-sm">Tags</p>
+    </div>
+    <div class="text-pink-400 opacity-80">
+      <i class="fa-solid fa-tags text-xl"></i>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+  <div class="lg:col-span-2 bg-cardbg border border-cardborder rounded-xl p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h3 class="text-lg font-semibold">Recent Posts</h3>
+      <a href="/admin/content/post/new" class="text-sm text-blue-400 hover:text-blue-300">New post</a>
+    </div>
+
+    {% if recent_posts %}
+    <div class="space-y-4">
+      {% for item in recent_posts %}
+      <div class="flex items-center justify-between border-b border-cardborder {% if not loop.last %}pb-4{% else %}pt-1 border-b-0{% endif %}">
+        <a href="/admin/content/post/{{ item.id }}/edit" class="font-medium text-textmain hover:text-blue-400">
+          {{ item.title }}
+        </a>
+        <div class="flex items-center space-x-4">
+          {% if item.status == 'published' %}
+          <span class="px-2.5 py-1 text-xs font-semibold bg-green-500/10 text-green-400 rounded-md border border-green-500/20">Published</span>
+          {% else %}
+          <span class="px-2.5 py-1 text-xs font-semibold bg-yellow-500/10 text-yellow-400 rounded-md border border-yellow-500/20">Draft</span>
+          {% endif %}
+          <span class="text-textmuted text-sm w-24 text-right">
+            {{ item.updated_at.strftime('%b %d, %Y') if item.updated_at else '' }}
+          </span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-textmuted">No posts created yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h3 class="text-lg font-semibold mb-6">Quick Draft</h3>
+    {% if draft_error %}
+    <div class="alert mb-4">{{ draft_error }}</div>
+    {% endif %}
+    {% if draft_saved %}
+    <div class="mb-4 px-3 py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 text-sm">
+      Draft saved.
+    </div>
+    {% endif %}
+    <form method="post" action="/admin/quick-draft">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+      <div class="mb-4">
+        <input
+          type="text"
+          name="title"
+          placeholder="Title"
+          required
+          class="w-full bg-darkbg border border-cardborder rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors"
+        />
+      </div>
+      <div class="mb-6">
+        <textarea
+          name="body"
+          placeholder="What's on your mind?"
+          rows="4"
+          class="w-full bg-darkbg border border-cardborder rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors resize-none"
+        ></textarea>
+      </div>
+      <button
+        type="submit"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-colors"
+      >
+        Save Draft
+      </button>
+    </form>
+  </div>
+</div>
 {% endblock %}

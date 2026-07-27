@@ -1,15 +1,15 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% block title %}{{ title }} | PYpress{% endblock %}
+{% block page_heading %}{{ title }}{% endblock %}
 {% block content %}
-<section class="section-header">
+<section class="section-header mb-6">
   <div>
-    <h1>{{ title }}</h1>
-    <p>Manage {{ title|lower }} for your site.</p>
+    <p class="text-textmuted">Manage {{ title|lower }} for your site.</p>
   </div>
   <a href="/admin/content/{{ content_type }}/new" class="button-link">Create {{ title[:-1]|lower }}</a>
 </section>
 
-<section class="panel">
+<section class="bg-cardbg border border-cardborder rounded-xl p-6">
   {% if items %}
   <table class="content-table">
     <thead>
@@ -42,7 +42,7 @@
     </tbody>
   </table>
   {% else %}
-  <p>No {{ title|lower }} yet.</p>
+  <p class="text-textmuted">No {{ title|lower }} yet.</p>
   {% endif %}
 </section>
 {% endblock %}

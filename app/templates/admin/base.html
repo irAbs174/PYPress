@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{% block title %}PYpress{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              darkbg: "#12141c",
+              cardbg: "#1e212b",
+              cardborder: "#2a2f3d",
+              accent: "#3b82f6",
+              textmain: "#f3f4f6",
+              textmuted: "#9ca3af",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      ::-webkit-scrollbar { width: 8px; }
+      ::-webkit-scrollbar-track { background: #12141c; }
+      ::-webkit-scrollbar-thumb { background: #2a2f3d; border-radius: 4px; }
+      ::-webkit-scrollbar-thumb:hover { background: #3b4256; }
+
+      /* Keep form controls readable inside the dark admin shell */
+      .admin-panel input,
+      .admin-panel textarea,
+      .admin-panel select {
+        background: #12141c;
+        border: 1px solid #2a2f3d;
+        color: #f3f4f6;
+        border-radius: 0.5rem;
+        padding: 0.65rem 0.9rem;
+        width: 100%;
+        font: inherit;
+      }
+      .admin-panel label {
+        display: grid;
+        gap: 0.35rem;
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+      .admin-panel .stack {
+        display: grid;
+        gap: 1rem;
+      }
+      .admin-panel .content-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      .admin-panel .content-table th,
+      .admin-panel .content-table td {
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 1px solid #2a2f3d;
+      }
+      .admin-panel .content-table th {
+        color: #9ca3af;
+        font-weight: 600;
+      }
+      .admin-panel .alert {
+        background: rgba(239, 68, 68, 0.12);
+        color: #fca5a5;
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        padding: 0.75rem 1rem;
+        border-radius: 0.5rem;
+      }
+      .admin-panel .button-link,
+      .admin-panel button[type="submit"] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.65rem 1rem;
+        cursor: pointer;
+        font: inherit;
+        text-decoration: none;
+      }
+      .admin-panel .secondary-btn {
+        background: #2a2f3d;
+        color: #f3f4f6;
+      }
+      .admin-panel a {
+        color: #60a5fa;
+      }
+      .admin-panel fieldset {
+        border: 1px solid #2a2f3d;
+        border-radius: 0.5rem;
+        padding: 1rem;
+      }
+      .admin-panel .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #f3f4f6;
+      }
+      .admin-panel .checkbox-row input {
+        width: auto;
+      }
+      .admin-panel .section-header,
+      .admin-panel .hero-row,
+      .admin-panel .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .admin-panel .content-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .admin-panel .content-list li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #2a2f3d;
+        flex-wrap: wrap;
+      }
+      .admin-panel td.actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+      .admin-panel td.actions form {
+        margin: 0;
+      }
+    </style>
+    {% block head %}{% endblock %}
+  </head>
+  <body class="bg-darkbg text-textmain font-sans antialiased flex h-screen overflow-hidden">
+    {% set path = request.url.path %}
+    <aside class="w-64 bg-cardbg border-r border-cardborder flex-col hidden md:flex z-10">
+      <div class="h-20 flex items-center px-6 border-b border-cardborder">
+        <div
+          class="w-8 h-8 bg-blue-500 flex items-center justify-center font-bold text-xl mr-3 text-white"
+          style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"
+        >
+          P
+        </div>
+        <a href="/admin" class="text-2xl font-bold tracking-wide text-textmain no-underline">PYPress</a>
+      </div>
+
+      <nav class="flex-1 overflow-y-auto py-4 px-4 space-y-1">
+        <a
+          href="/admin"
+          class="flex items-center px-4 py-2.5 rounded-lg mb-2 {% if path == '/admin' %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-solid fa-house w-6"></i>
+          <span class="font-medium">Dashboard</span>
+        </a>
+        <a
+          href="/admin/content/post"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith('/admin/content/post') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-solid fa-pen-nib w-6"></i>
+          <span class="font-medium">Posts</span>
+        </a>
+        <a
+          href="/admin/content/page"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith('/admin/content/page') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-regular fa-file-lines w-6"></i>
+          <span class="font-medium">Pages</span>
+        </a>
+        <a
+          href="/admin/media"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith('/admin/media') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-regular fa-image w-6"></i>
+          <span class="font-medium">Media</span>
+        </a>
+        <a
+          href="/admin/taxonomies"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith('/admin/taxonomies') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-regular fa-folder w-6"></i>
+          <span class="font-medium">Categories</span>
+        </a>
+        <a
+          href="/admin/taxonomies"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors text-textmuted hover:text-white hover:bg-white/5"
+        >
+          <i class="fa-solid fa-tags w-6"></i>
+          <span class="font-medium">Tags</span>
+        </a>
+        <a
+          href="/admin/themes"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors mt-4 {% if path.startswith('/admin/themes') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-solid fa-paint-roller w-6"></i>
+          <span class="font-medium">Themes</span>
+        </a>
+        <a
+          href="/admin/plugins"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors {% if path.startswith('/admin/plugins') %}bg-blue-600 text-white{% else %}text-textmuted hover:text-white hover:bg-white/5{% endif %}"
+        >
+          <i class="fa-solid fa-puzzle-piece w-6"></i>
+          <span class="font-medium">Plugins</span>
+        </a>
+        <a
+          href="/"
+          class="flex items-center px-4 py-2.5 rounded-lg transition-colors text-textmuted hover:text-white hover:bg-white/5"
+        >
+          <i class="fa-solid fa-arrow-up-right-from-square w-6"></i>
+          <span class="font-medium">View site</span>
+        </a>
+      </nav>
+
+      <div class="p-4 border-t border-cardborder">
+        <form method="post" action="/logout">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+          <button
+            type="submit"
+            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-textmuted hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Log out</span>
+          </button>
+        </form>
+      </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col h-screen overflow-hidden">
+      <header class="h-20 bg-darkbg border-b border-cardborder flex items-center justify-between px-4 md:px-8">
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            class="md:hidden text-textmuted hover:text-white"
+            onclick="document.getElementById('mobile-nav').classList.toggle('hidden')"
+            aria-label="Toggle navigation"
+          >
+            <i class="fa-solid fa-bars text-xl"></i>
+          </button>
+          <h1 class="text-2xl font-semibold">{% block page_heading %}Dashboard{% endblock %}</h1>
+        </div>
+
+        <div class="flex items-center px-3 py-1.5 rounded-lg">
+          <img
+            src="https://ui-avatars.com/api/?name={{ current_user.email }}&background=3b82f6&color=fff"
+            alt="User"
+            class="w-8 h-8 rounded-full mr-3"
+          />
+          <span class="font-medium mr-2 truncate max-w-[10rem]">{{ current_user.email }}</span>
+          <span class="text-xs text-textmuted uppercase tracking-wide">{{ current_user.role }}</span>
+        </div>
+      </header>
+
+      <div id="mobile-nav" class="hidden md:hidden border-b border-cardborder bg-cardbg px-4 py-3 space-y-1">
+        <a href="/admin" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Dashboard</a>
+        <a href="/admin/content/post" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Posts</a>
+        <a href="/admin/content/page" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Pages</a>
+        <a href="/admin/media" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Media</a>
+        <a href="/admin/taxonomies" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Categories</a>
+        <a href="/admin/themes" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Themes</a>
+        <a href="/admin/plugins" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">Plugins</a>
+        <a href="/" class="block px-3 py-2 rounded-lg text-textmuted hover:bg-white/5">View site</a>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-4 md:p-8 admin-panel">
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </body>
+</html>

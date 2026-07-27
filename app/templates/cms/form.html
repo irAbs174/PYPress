@@ -1,11 +1,11 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% block title %}{% if item %}Edit{% else %}New{% endif %} {{ title }} | PYpress{% endblock %}
+{% block page_heading %}{% if item %}Edit{% else %}New{% endif %} {{ title }}{% endblock %}
 {% block content %}
-<section class="panel editor-panel">
-  <div class="section-header">
+<section class="bg-cardbg border border-cardborder rounded-xl p-6 editor-panel">
+  <div class="section-header mb-4">
     <div>
-      <h1>{% if item %}Edit{% else %}New{% endif %} {{ title }}</h1>
-      <p>{% if item %}Update{% else %}Create{% endif %} your {{ title|lower }} content.</p>
+      <p class="text-textmuted">{% if item %}Update{% else %}Create{% endif %} your {{ title|lower }} content.</p>
     </div>
     <a href="/admin/content/{{ content_type }}" class="secondary-btn button-link">Back</a>
   </div>

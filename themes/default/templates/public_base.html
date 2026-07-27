@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}{{ page_title or site_title }}{% endblock %}</title>
+    <title>{% block title %}{{ page_title or (site_title ~ ' - ' ~ site_tagline) }}{% endblock %}</title>
     {% if item %}
     <meta name="description" content="{{ item.meta_description or item.excerpt or item.title }}" />
     <meta property="og:title" content="{{ item.meta_title or item.title }}" />
@@ -12,28 +12,138 @@
     {% else %}
     <meta name="description" content="{{ site_tagline }}" />
     {% endif %}
-    <link rel="stylesheet" href="/theme-static/theme.css" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Caveat:wght@600&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Plus Jakarta Sans", "sans-serif"],
+              hand: ["Caveat", "cursive"],
+            },
+            colors: {
+              brand: {
+                50: "#eff6ff",
+                100: "#dbeafe",
+                500: "#3b82f6",
+                600: "#2563eb",
+                700: "#1d4ed8",
+              },
+              dark: {
+                bg: "#0b0f19",
+                card: "#131927",
+                border: "#1f293d",
+                hover: "#1e293b",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .bg-grid-pattern {
+        background-image: radial-gradient(rgba(59, 130, 246, 0.15) 1px, transparent 1px);
+        background-size: 24px 24px;
+      }
+      .glow-blue {
+        box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.3);
+      }
+      .prose-body {
+        white-space: pre-wrap;
+        color: #cbd5e1;
+        line-height: 1.7;
+      }
+    </style>
+    {% block head %}{% endblock %}
   </head>
-  <body>
-    <div class="site-shell">
-      <header class="site-header">
-        <div>
-          <a class="brand" href="/">{{ site_title }}</a>
-          <p class="tagline">{{ site_tagline }}</p>
+  <body class="bg-dark-bg text-slate-100 font-sans antialiased selection:bg-brand-500 selection:text-white">
+    <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0 opacity-60"></div>
+    <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-brand-500/10 blur-[120px] pointer-events-none z-0"></div>
+
+    <div class="relative z-10 flex flex-col min-h-screen">
+      <header class="border-b border-dark-border bg-dark-bg/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <a href="/" class="flex items-center space-x-3 group">
+            <div
+              class="w-10 h-10 bg-gradient-to-tr from-brand-600 to-blue-400 rounded-xl flex items-center justify-center font-extrabold text-2xl text-white shadow-lg shadow-brand-500/20 group-hover:scale-105 transition-transform"
+              style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"
+            >
+              P
+            </div>
+            <span class="text-2xl font-extrabold tracking-tight text-white">
+              PY<span class="text-brand-500">Press</span>
+            </span>
+          </a>
+
+          <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-300">
+            <a href="/#features" class="hover:text-white transition-colors">Features</a>
+            <a href="/#tech" class="hover:text-white transition-colors">Tech Stack</a>
+            <a href="/#demo" class="hover:text-white transition-colors">Demo</a>
+            <a href="/#posts" class="hover:text-white transition-colors">Posts</a>
+            <a href="https://github.com/irAbs174/PYPress" target="_blank" rel="noopener" class="hover:text-white transition-colors">GitHub</a>
+          </nav>
+
+          <div class="flex items-center space-x-4">
+            <a
+              href="https://github.com/irAbs174/PYPress"
+              target="_blank"
+              rel="noopener"
+              class="hidden sm:inline-flex items-center space-x-2 text-sm font-semibold bg-dark-card border border-dark-border hover:border-slate-600 text-slate-200 px-4 py-2.5 rounded-xl transition-all"
+            >
+              <i class="fa-brands fa-github text-lg"></i>
+              <span>Star on GitHub</span>
+            </a>
+            <a
+              href="/admin"
+              class="inline-flex items-center space-x-2 text-sm font-semibold bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl shadow-lg shadow-brand-500/25 transition-all"
+            >
+              <span>Get Started</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </div>
         </div>
-        <nav class="nav">
-          <a href="/">Home</a>
-          <a href="/admin">Admin</a>
-        </nav>
       </header>
-      <main>
+
+      <main class="flex-1">
         {% block content %}{% endblock %}
       </main>
-      <footer class="site-footer">
-        <p>&copy; {{ site_title }}</p>
-        {% if plugin_footer_note %}
-        <p class="plugin-note">{{ plugin_footer_note }}</p>
-        {% endif %}
+
+      <footer class="mt-auto border-t border-dark-border bg-dark-card/50">
+        <div class="max-w-7xl mx-auto px-6 py-12">
+          <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center font-bold text-white text-lg"
+                style="clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"
+              >
+                P
+              </div>
+              <span class="font-bold text-xl text-white">{{ site_title }}</span>
+            </div>
+
+            <div class="flex items-center space-x-3 text-sm text-slate-400">
+              <i class="fa-brands fa-github text-lg"></i>
+              <a
+                href="https://github.com/irAbs174/PYPress"
+                target="_blank"
+                rel="noopener"
+                class="hover:text-white transition-colors underline font-mono"
+              >
+                github.com/irAbs174/PYPress
+              </a>
+            </div>
+
+            <div class="text-xs text-slate-500 text-center md:text-right">
+              <div>Released under the MIT License. Built with FastAPI.</div>
+              {% if plugin_footer_note %}
+              <div class="mt-2 italic text-slate-400">{{ plugin_footer_note }}</div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   </body>

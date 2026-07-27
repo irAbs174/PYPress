@@ -1,21 +1,24 @@
 {% extends "public_base.html" %}
 {% block content %}
-<article>
-  <h1>{{ item.title }}</h1>
-  <p class="meta">
+<article class="max-w-3xl mx-auto px-6 py-16">
+  <a href="/#posts" class="text-sm text-slate-400 hover:text-white transition-colors inline-flex items-center gap-2 mb-8">
+    <i class="fa-solid fa-arrow-left text-xs"></i> Back to posts
+  </a>
+  <h1 class="text-3xl sm:text-4xl font-extrabold text-white tracking-tight mb-4">{{ item.title }}</h1>
+  <p class="text-sm text-slate-500 mb-6">
     {% if item.author %}By {{ item.author.email }} · {% endif %}
-    {{ item.updated_at.strftime('%Y-%m-%d') if item.updated_at else '' }}
+    {{ item.updated_at.strftime('%b %d, %Y') if item.updated_at else '' }}
   </p>
   {% if item.categories or item.tags %}
-  <p class="taxonomies meta">
+  <div class="flex flex-wrap gap-2 mb-8">
     {% for category in item.categories %}
-    <a href="/category/{{ category.slug }}">{{ category.name }}</a>
+    <a href="/category/{{ category.slug }}" class="text-xs px-2 py-1 rounded-md bg-brand-500/10 text-brand-500 border border-brand-500/20">{{ category.name }}</a>
     {% endfor %}
     {% for tag in item.tags %}
-    <a href="/tag/{{ tag.slug }}">#{{ tag.name }}</a>
+    <a href="/tag/{{ tag.slug }}" class="text-xs px-2 py-1 rounded-md bg-slate-800 text-slate-300 border border-dark-border">#{{ tag.name }}</a>
     {% endfor %}
-  </p>
+  </div>
   {% endif %}
-  <div class="prose">{{ item.body }}</div>
+  <div class="prose-body bg-dark-card border border-dark-border rounded-2xl p-6 sm:p-8">{{ item.body }}</div>
 </article>
 {% endblock %}

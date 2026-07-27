@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% block title %}Media | PYpress{% endblock %}
+{% block page_heading %}Media{% endblock %}
 {% block content %}
-<section class="section-header">
+<section class="section-header mb-6">
   <div>
-    <h1>Media library</h1>
-    <p>Upload images and documents for your content.</p>
+    <p class="text-textmuted">Upload images and documents for your content.</p>
   </div>
 </section>
 
@@ -12,7 +12,7 @@
 <div class="alert">{{ error }}</div>
 {% endif %}
 
-<section class="panel stack">
+<section class="bg-cardbg border border-cardborder rounded-xl p-6 stack mb-6">
   <form method="post" action="/admin/media/upload" enctype="multipart/form-data" class="stack">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
     <label>
@@ -23,7 +23,7 @@
   </form>
 </section>
 
-<section class="panel" style="margin-top: 1rem;">
+<section class="bg-cardbg border border-cardborder rounded-xl p-6">
   {% if assets %}
   <table class="content-table">
     <thead>
@@ -53,7 +53,7 @@
     </tbody>
   </table>
   {% else %}
-  <p>No media uploaded yet.</p>
+  <p class="text-textmuted">No media uploaded yet.</p>
   {% endif %}
 </section>
 {% endblock %}

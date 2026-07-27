@@ -25,8 +25,9 @@ def login(client):
 def test_root_serves_public_home(client):
     response = client.get("/")
     assert response.status_code == 200
+    assert "FastAPI Powered CMS" in response.text
     assert "Latest posts" in response.text
-    assert "hello_world" in response.text or "Powered by the hello_world plugin" in response.text
+    assert "Powered by the hello_world plugin" in response.text
 
 
 def test_admin_requires_login(client):

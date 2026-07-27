@@ -1,14 +1,14 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% block title %}Plugins | PYpress{% endblock %}
+{% block page_heading %}Plugins{% endblock %}
 {% block content %}
-<section class="section-header">
+<section class="section-header mb-6">
   <div>
-    <h1>Plugins</h1>
-    <p>Enable or disable filesystem plugins.</p>
+    <p class="text-textmuted">Enable or disable filesystem plugins.</p>
   </div>
 </section>
 
-<section class="panel">
+<section class="bg-cardbg border border-cardborder rounded-xl p-6">
   {% if plugins %}
   <table class="content-table">
     <thead>

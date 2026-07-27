@@ -1,14 +1,14 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 {% block title %}Themes | PYpress{% endblock %}
+{% block page_heading %}Themes{% endblock %}
 {% block content %}
-<section class="section-header">
+<section class="section-header mb-6">
   <div>
-    <h1>Themes</h1>
-    <p>Activate a public theme for your site.</p>
+    <p class="text-textmuted">Activate a public theme for your site.</p>
   </div>
 </section>
 
-<section class="panel">
+<section class="bg-cardbg border border-cardborder rounded-xl p-6">
   {% if themes %}
   <table class="content-table">
     <thead>
