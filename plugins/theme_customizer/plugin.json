@@ -1,0 +1,6 @@
+{
+  "name": "theme_customizer",
+  "version": "1.0.0",
+  "description": "Elementor-style appearance settings: colors, hero copy, fonts, and custom CSS",
+  "enabled_by_default": false
+}

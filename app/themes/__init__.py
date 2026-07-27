@@ -70,4 +70,13 @@ def build_templates(active_theme: str | None = None) -> Jinja2Templates:
 
     templates = Jinja2Templates(directory=str(admin_templates))
     templates.env.loader = ChoiceLoader(loaders)
+
+    def plugin_context(request):
+        hooks = getattr(request.app.state, "hooks", None)
+        nav_items = []
+        if hooks is not None:
+            nav_items = hooks.apply_filters("admin.nav_items", [], request) or []
+        return {"plugin_nav_items": nav_items}
+
+    templates.context_processors.append(plugin_context)
     return templates

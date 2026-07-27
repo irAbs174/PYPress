@@ -1,0 +1,35 @@
+{% extends "admin/base.html" %}
+{% block title %}Cookie banner | PYpress{% endblock %}
+{% block page_heading %}Cookie banner{% endblock %}
+{% block content %}
+<section class="section-header mb-6">
+  <div>
+    <p class="text-textmuted">Configure the dismissible consent notice shown on the public site.</p>
+  </div>
+</section>
+
+{% if saved %}
+<div class="mb-4 px-3 py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 text-sm">
+  Cookie banner settings saved.
+</div>
+{% endif %}
+
+<form method="post" action="/admin/cookie-consent" class="stack">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6 stack">
+    <label>
+      <span>Message</span>
+      <textarea name="message" rows="3" required>{{ config.message }}</textarea>
+    </label>
+    <label>
+      <span>Button label</span>
+      <input type="text" name="button_label" value="{{ config.button_label }}" required />
+    </label>
+    <label>
+      <span>Privacy policy URL <span class="text-textmuted">(optional)</span></span>
+      <input type="text" name="policy_url" value="{{ config.policy_url }}" placeholder="/pages/privacy" />
+    </label>
+    <button type="submit">Save</button>
+  </section>
+</form>
+{% endblock %}

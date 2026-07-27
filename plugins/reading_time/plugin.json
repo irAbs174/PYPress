@@ -1,0 +1,6 @@
+{
+  "name": "reading_time",
+  "version": "1.0.0",
+  "description": "Estimates reading time for posts and shows it on single post pages",
+  "enabled_by_default": false
+}

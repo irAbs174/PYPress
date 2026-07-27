@@ -1,0 +1,6 @@
+{
+  "name": "maintenance_mode",
+  "version": "1.0.0",
+  "description": "Put the public site behind a maintenance screen with an admin bypass",
+  "enabled_by_default": false
+}

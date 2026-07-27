@@ -4,23 +4,32 @@
 <section class="py-20 lg:py-28 px-6 max-w-7xl mx-auto text-center relative">
 
   <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.15] max-w-5xl mx-auto mb-6">
-    {{ site_title }}: A WordPress-inspired CMS built with
-    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-brand-500 to-indigo-400">FastAPI</span>.
+    {% if custom_hero_title %}
+      {{ custom_hero_title }}
+    {% else %}
+      {{ site_title }}: A WordPress-inspired CMS built with
+      <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-brand-500 to-indigo-400">FastAPI</span>.
+    {% endif %}
   </h1>
 
   <p class="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto mb-10 font-normal leading-relaxed">
-    {{ site_tagline }}. Simple, extensible, and developer-friendly — build, extend, and publish content seamlessly.
+    {% if custom_hero_subtitle %}
+      {{ custom_hero_subtitle }}
+    {% else %}
+      {{ site_tagline }}. Simple, extensible, and developer-friendly — build, extend, and publish content seamlessly.
+    {% endif %}
   </p>
 
   <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
     <a
-      href="https://github.com/irAbs174/PYPress"
-      target="_blank"
-      rel="noopener"
+      href="{{ custom_hero_cta_url or 'https://github.com/irAbs174/PYPress' }}"
+      {% if not custom_hero_cta_url or custom_hero_cta_url.startswith('http') %}target="_blank" rel="noopener"{% endif %}
       class="w-full sm:w-auto inline-flex items-center justify-center space-x-3 bg-brand-600 hover:bg-brand-500 text-white font-semibold px-8 py-4 rounded-xl shadow-xl shadow-brand-500/20 hover:scale-[1.02] transition-all"
     >
+      {% if not custom_hero_cta_url %}
       <i class="fa-brands fa-github text-xl"></i>
-      <span>View on GitHub</span>
+      {% endif %}
+      <span>{{ custom_hero_cta_text or 'View on GitHub' }}</span>
     </a>
     <a
       href="#features"
@@ -33,7 +42,7 @@
 
   <div class="relative inline-block mb-8">
     <span class="font-hand text-3xl sm:text-4xl text-teal-400 -rotate-3 inline-block">
-      Build. Extend. Publish.
+      {{ custom_hero_handwritten or 'Build. Extend. Publish.' }}
     </span>
   </div>
 </section>

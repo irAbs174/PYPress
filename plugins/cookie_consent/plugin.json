@@ -1,0 +1,6 @@
+{
+  "name": "cookie_consent",
+  "version": "1.0.0",
+  "description": "Adds a dismissible cookie consent banner on the public site",
+  "enabled_by_default": false
+}

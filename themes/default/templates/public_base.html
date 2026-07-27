@@ -52,14 +52,25 @@
         box-shadow: 0 0 50px -10px rgba(59, 130, 246, 0.3);
       }
       .prose-body {
-        white-space: pre-wrap;
+        white-space: normal;
         color: #cbd5e1;
         line-height: 1.7;
       }
+      .prose-body img { max-width: 100%; height: auto; border-radius: 0.75rem; }
+      .prose-body p { margin-bottom: 1rem; }
+      {% if theme_custom_css_vars %}
+      :root {
+        {{ theme_custom_css_vars | safe }}
+      }
+      {% endif %}
+      {% if theme_custom_css %}
+      {{ theme_custom_css | safe }}
+      {% endif %}
     </style>
+    {% if plugin_head_html %}{{ plugin_head_html | safe }}{% endif %}
     {% block head %}{% endblock %}
   </head>
-  <body class="bg-dark-bg text-slate-100 font-sans antialiased selection:bg-brand-500 selection:text-white">
+  <body class="bg-dark-bg text-slate-100 font-sans antialiased selection:bg-brand-500 selection:text-white" style="{% if theme_body_style %}{{ theme_body_style }}{% endif %}">
     <div class="fixed inset-0 bg-grid-pattern pointer-events-none z-0 opacity-60"></div>
     <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-brand-500/10 blur-[120px] pointer-events-none z-0"></div>
 
@@ -146,5 +157,6 @@
         </div>
       </footer>
     </div>
+    {% if plugin_body_html %}{{ plugin_body_html | safe }}{% endif %}
   </body>
 </html>

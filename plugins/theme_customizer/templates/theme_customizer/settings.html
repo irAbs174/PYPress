@@ -1,0 +1,115 @@
+{% extends "admin/base.html" %}
+{% block title %}Appearance | PYpress{% endblock %}
+{% block page_heading %}Appearance{% endblock %}
+{% block content %}
+<section class="section-header mb-6">
+  <div>
+    <p class="text-textmuted">Customize colors, hero copy, fonts, and CSS — like a lightweight Elementor for your theme.</p>
+  </div>
+  <a href="/" target="_blank" class="secondary-btn button-link">Preview site</a>
+</section>
+
+{% if saved %}
+<div class="mb-4 px-3 py-2 rounded-lg bg-green-500/10 text-green-400 border border-green-500/20 text-sm">
+  Appearance settings saved. Refresh the public site to see changes.
+</div>
+{% endif %}
+{% if error %}
+<div class="alert mb-4">{{ error }}</div>
+{% endif %}
+
+<form method="post" action="/admin/appearance" class="stack">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h2 class="text-lg font-semibold mb-4">Color presets</h2>
+    <div class="flex flex-wrap gap-2 mb-2">
+      {% for name in presets %}
+      <button type="submit" name="preset" value="{{ name }}" class="secondary-btn" style="text-transform:capitalize;">
+        Apply {{ name }}
+      </button>
+      {% endfor %}
+    </div>
+    <p class="text-textmuted text-sm">Presets update colors only; hero text and custom CSS are kept.</p>
+  </section>
+
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h2 class="text-lg font-semibold mb-4">Colors</h2>
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <label>
+        <span>Primary</span>
+        <input type="color" name="primary_color" value="{{ config.primary_color }}" />
+      </label>
+      <label>
+        <span>Accent</span>
+        <input type="color" name="accent_color" value="{{ config.accent_color }}" />
+      </label>
+      <label>
+        <span>Background</span>
+        <input type="color" name="background_color" value="{{ config.background_color }}" />
+      </label>
+      <label>
+        <span>Card</span>
+        <input type="color" name="card_color" value="{{ config.card_color }}" />
+      </label>
+      <label>
+        <span>Text</span>
+        <input type="color" name="text_color" value="{{ config.text_color }}" />
+      </label>
+      <label>
+        <span>Font family</span>
+        <select name="font_family">
+          {% for font in ['Plus Jakarta Sans', 'Inter', 'Poppins', 'Nunito', 'Space Grotesk', 'DM Sans'] %}
+          <option value="{{ font }}" {% if config.font_family == font %}selected{% endif %}>{{ font }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+  </section>
+
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h2 class="text-lg font-semibold mb-4">Hero section</h2>
+    <div class="stack">
+      <label>
+        <span>Headline <span class="text-textmuted">(leave blank for theme default)</span></span>
+        <input type="text" name="hero_title" value="{{ config.hero_title }}" placeholder="Build sites with Python" />
+      </label>
+      <label>
+        <span>Subtitle</span>
+        <textarea name="hero_subtitle" rows="2" placeholder="A short supporting sentence">{{ config.hero_subtitle }}</textarea>
+      </label>
+      <div class="grid gap-4 md:grid-cols-2">
+        <label>
+          <span>CTA label</span>
+          <input type="text" name="hero_cta_text" value="{{ config.hero_cta_text }}" placeholder="Get started" />
+        </label>
+        <label>
+          <span>CTA URL</span>
+          <input type="text" name="hero_cta_url" value="{{ config.hero_cta_url }}" placeholder="/register" />
+        </label>
+      </div>
+      <label>
+        <span>Handwritten accent</span>
+        <input type="text" name="hero_handwritten" value="{{ config.hero_handwritten }}" placeholder="Build. Extend. Publish." />
+      </label>
+    </div>
+  </section>
+
+  <section class="bg-cardbg border border-cardborder rounded-xl p-6">
+    <h2 class="text-lg font-semibold mb-4">Custom CSS</h2>
+    <label>
+      <span>Additional CSS injected on every public page</span>
+      <textarea name="custom_css" rows="8" placeholder=".prose-body a { color: #22d3ee; }" style="font-family: ui-monospace, monospace;">{{ config.custom_css }}</textarea>
+    </label>
+  </section>
+
+  <div class="actions">
+    <button type="submit">Save appearance</button>
+  </div>
+</form>
+
+<form method="post" action="/admin/appearance/reset" class="mt-4" onsubmit="return confirm('Reset all appearance settings to defaults?');">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+  <button type="submit" class="secondary-btn">Reset to defaults</button>
+</form>
+{% endblock %}

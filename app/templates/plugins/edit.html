@@ -76,7 +76,9 @@
   <ul class="list-disc pl-5 space-y-1">
     <li><code>hooks.add_action(name, callback)</code> / <code>hooks.do_action(name, ...)</code></li>
     <li><code>hooks.add_filter(name, callback)</code> / <code>hooks.apply_filters(name, value, ...)</code></li>
-    <li>Core hooks: <code>app.startup</code>, <code>content.before_save</code>, <code>content.after_save</code>, <code>public.before_render</code></li>
+    <li>Core hooks: <code>app.startup</code>, <code>content.before_save</code>, <code>content.after_save</code>, <code>public.before_render</code>, <code>public.access</code>, <code>admin.nav_items</code></li>
+    <li>Register admin pages with <code>app.include_router(...)</code> and add sidebar links via <code>admin.nav_items</code></li>
+    <li>See <code>plugins/theme_customizer</code> for an Elementor-style settings example</li>
   </ul>
 </section>
 {% endblock %}
