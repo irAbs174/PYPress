@@ -1,5 +1,7 @@
 # PYpress
 
+![PYPress banner](./banner.png)
+
 PYpress is a Python-based CMS inspired by WordPress and built on FastAPI.
 
 ## Features
